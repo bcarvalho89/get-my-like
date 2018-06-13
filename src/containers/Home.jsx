@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
 import firebase from '../helpers/firebase';
-import moment from 'moment';
+import { poolExpiration } from '../helpers/timeManipulation';
 
 class Home extends Component {
   constructor() {
@@ -33,24 +35,13 @@ class Home extends Component {
     });
   }
 
-  timeLeft(expireIn) {
-    const now = moment();
-    const to = moment(expireIn);
-    const isBefore = now.isBefore(to);
-
-    if (isBefore) {
-      const diffTime = moment.duration(to.diff(now));
-      const dayLabel = diffTime.days() > 1 ? 'dias' : 'dia';
-
-      /* TODO: Update de view in interval of 1 sec*/
-      return (
-        <span>Tempo restante: {`${diffTime.days()} ${dayLabel} ${diffTime.hours()}:${diffTime.minutes()}:${diffTime.seconds()}`}</span>
-      )
-    } else {
-      return (
-        <span>Votação expirada</span>
-      )
+  summarizeLikes(options) {
+    let amount = 0;
+    for (let option in options) {
+      amount += options[option].likes;
     }
+
+    return (<h5>Quantidade de likes: {amount}</h5>);
   }
 
   render() {
@@ -63,14 +54,9 @@ class Home extends Component {
             {this.state.pools.map(pool => {
               return (
                 <div key={pool.id}>
-                  <h3>{pool.title} - <small>Expira em {moment(pool.expireIn).format('DD/MM/YYYY [às] HH:mm:ss')} - {this.timeLeft(pool.expireIn)}</small></h3>
-                  <ul>
-                    {pool.options.map(option => {
-                      return (
-                        <li key={option.title}>{option.title} - Likes {option.likes}</li>
-                      )
-                    })}
-                  </ul>
+                  <h3>{pool.title} - <small>{poolExpiration(pool.expireIn)}</small></h3>
+                  {this.summarizeLikes(pool.options)}
+                  <Link to={`/pool/${pool.id}`}>Mais detalhes</Link>
                 </div>
               )
             })}

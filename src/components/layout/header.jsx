@@ -8,7 +8,6 @@ class Header extends Component {
       <header>
         <NavLink to="/" exact activeClassName="is-active">Home</NavLink>
         <NavLink to="/dashboard" activeClassName="is-active">Dashboard</NavLink>
-        <NavLink to="/pool/1" activeClassName="is-active">Pool</NavLink>
       </header>
     )
   }
